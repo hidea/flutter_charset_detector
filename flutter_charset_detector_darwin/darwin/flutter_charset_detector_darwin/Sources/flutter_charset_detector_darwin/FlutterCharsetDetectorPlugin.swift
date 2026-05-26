@@ -32,6 +32,7 @@ public class FlutterCharsetDetectorPlugin: NSObject, FlutterPlugin {
             DispatchQueue.main.async { result(value) }
         }
         nonisolated(unsafe) let call = call
+        nonisolated(unsafe) let result = result
         DispatchQueue.global(qos: .userInitiated).async { [self] in
             switch call.method {
             case "autoDecode":
@@ -39,7 +40,9 @@ public class FlutterCharsetDetectorPlugin: NSObject, FlutterPlugin {
             case "detect":
                 handleDetect(call, resultWrapper)
             default:
-                resultWrapper(FlutterError(code: "UnsupportedMethod", message: "\(call.method) is not supported", details: nil))
+                DispatchQueue.main.async {
+                    result(FlutterError(code: "UnsupportedMethod", message: "\(call.method) is not supported", details: nil))
+                }
             }
         }
     }
